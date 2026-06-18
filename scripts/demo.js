@@ -66,6 +66,19 @@ try {
   log(`- Agent B: [\`${agentB.address}\`](${addressLink(agentB.address)}) (freshly generated, funded by A)`);
   log('');
 
+  // Preflight: confirm the real connection + balance, so problems are obvious
+  // instead of an opaque "insufficient funds" (e.g. a stale exported RPC env var).
+  const net = await provider.getNetwork();
+  const payerBalance = await provider.getBalance(agentA.address);
+  log(`- RPC chainId: ${net.chainId} · payer balance: ${ethers.formatEther(payerBalance)} PHRS`);
+  if (net.chainId !== 688689n) {
+    throw new Error(`Connected to chainId ${net.chainId}, not Pharos Atlantic (688689). A stale exported RPC overrides .env — open a fresh terminal, or run: unset RPC PRIVATE_KEY CONTRACT_ADDRESS`);
+  }
+  if (payerBalance < ethers.parseEther('0.1')) {
+    throw new Error(`Payer ${agentA.address} balance is only ${ethers.formatEther(payerBalance)} PHRS — too low. Fund it or claim from the faucet.`);
+  }
+  log('');
+
   // 1. Fund agent B for gas.
   log('## 1. Fund agent B');
   const fundTx = await agentA.sendTransaction({ to: agentB.address, value: ethers.parseEther('0.05') });
