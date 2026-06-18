@@ -29,6 +29,20 @@ It does not move funds, swap, or deploy tokens; the `pharos-skill-engine` owns t
   use `pharos-skill-engine`.
 - Coordination where everything is already public and front-running is a non-issue.
 
+## Capability Index
+
+Pharos Skill Engine format — map a user intent to its on-chain operation. Full `cast`/`forge` command templates (parameters, output parsing, error handling) are in [`references/commit-reveal.md`](references/commit-reveal.md).
+
+| User Need | Capability | Detailed Instructions |
+|---|---|---|
+| Open a sealed-bid auction / blind vote / private prediction round | `cast send createRound()` | → [references/commit-reveal.md](references/commit-reveal.md#open-a-round) |
+| Commit a hidden bid / vote / prediction | `cast send commit()` (sender-bound hash) | → [references/commit-reveal.md](references/commit-reveal.md#commit-a-hidden-value) |
+| Reveal my committed value | `cast send reveal()` | → [references/commit-reveal.md](references/commit-reveal.md#reveal) |
+| Pick the highest sealed bid on-chain | `cast send resolveHighest()` | → [references/commit-reveal.md](references/commit-reveal.md#resolve-highest-bid-sealed_bid) |
+| Inspect a round / commits / reveals | `cast call` views | → [references/commit-reveal.md](references/commit-reveal.md#views-free--no-gas) |
+
+> Same verified contract (`0x0d609dA43455afFCaB082393233AC10f61e875DF`), two interfaces: drive it with `cast`/`forge` (above, Pharos Skill Engine style) **or** the ethers `scripts/` (below).
+
 ## How it works
 
 1. **Create a round** with a commit window and a reveal window.
