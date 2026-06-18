@@ -68,21 +68,12 @@ node scripts/demo.js 45 45 100 250
 
 ## Live proof
 
-A complete two-agent sealed-bid auction, run on Pharos Atlantic (full log:
-[`proof/transcript.md`](proof/transcript.md)):
+A complete two-agent sealed-bid auction on Pharos Atlantic — **including a live
+copy-attack that the contract rejects on-chain** — with every transaction linked in
+[`proof/transcript.md`](proof/transcript.md). Reproduce it with `node scripts/demo.js 20 20`.
 
-| Step | Transaction |
-|---|---|
-| Deploy | [`0x9eda…9b01`](https://atlantic.pharosscan.xyz/tx/0x9edab92bf2daeeee61eb415ad5a106ba7a724a90458f92956cb22fdc82c49b01) |
-| Create round | [`0xc7ba…cc56`](https://atlantic.pharosscan.xyz/tx/0xc7bab887b969a8c1d0d1acd0493794b4ba9bcce0f5c314e072d6af4548fccc56) |
-| A commits (hidden) | [`0xc7fe…0fad`](https://atlantic.pharosscan.xyz/tx/0xc7fefc564ed8d4c9a016f38026e97a8b5a1d36c9f720adaf8bcc413149e30fad) |
-| B commits (hidden) | [`0x83cc…1471`](https://atlantic.pharosscan.xyz/tx/0x83cceb0f237605e2b98c21d11bae2886aff3c251e9a5b8cca351aed7ab581471) |
-| A reveals 100 | [`0x46c9…b877`](https://atlantic.pharosscan.xyz/tx/0x46c9dac7aa6421d6cbe464d5dfb623efb4eea968c80707add49702aa8261b877) |
-| B reveals 250 | [`0x927a…d3be`](https://atlantic.pharosscan.xyz/tx/0x927a173f05cee115dcbc30d611db43fd0330a71cb43beaf7a29843e1bda8d3be) |
-| Resolve → **B wins, 250** | [`0x68c5…47f3`](https://atlantic.pharosscan.xyz/tx/0x68c5139257a40328a682034c22952789f878c3ee096f6a81b0478d20d1ff47f3) |
-
-Through the commit phase both bids were just hashes on-chain — neither agent could
-see or copy the other's bid — and the higher bid won, decided entirely by the contract.
+- **Deployed:** [`CommitRevealCoordinator`](https://atlantic.pharosscan.xyz/address/0x0d609dA43455afFCaB082393233AC10f61e875DF) · [deploy tx](https://atlantic.pharosscan.xyz/tx/0x9edab92bf2daeeee61eb415ad5a106ba7a724a90458f92956cb22fdc82c49b01)
+- **The run shows:** bids stored on-chain as **hashes only** (invisible) → Agent B's attempt to *steal* Agent A's bid is **rejected** (`CommitMismatch` — the commit binds the sender) → both reveal → the higher bid (250) wins, resolved entirely on-chain.
 
 ## Security
 
