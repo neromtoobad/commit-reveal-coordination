@@ -2,7 +2,8 @@
 // Loads env, wires up an ethers v6 provider/signer/contract, and—critically—
 // builds the commit hash the SAME way the contract does:
 //   keccak256(abi.encodePacked(value, salt, msg.sender))  with value = abi.encode(uint256)
-import 'dotenv/config';
+import { config } from 'dotenv';
+config({ override: true }); // project .env wins over any shell-injected vars (e.g. a global RPC)
 import { readFileSync } from 'node:fs';
 import { ethers } from 'ethers';
 
