@@ -20,9 +20,18 @@ function requireEnv(name) {
   return v;
 }
 
-/** JSON-RPC provider pointed at the Pharos testnet RPC. */
+/** JSON-RPC provider pointed at the Pharos testnet RPC.
+ *  Forces legacy (type-0) gas: Pharos Atlantic's EIP-1559 maxFeePerGas can come
+ *  back below the base fee, making type-2 txs fail intermittently ("insufficient
+ *  funds"). The legacy gasPrice is reliable — the same one forge/cast use with --legacy. */
 export function getProvider() {
-  return new ethers.JsonRpcProvider(requireEnv('RPC'));
+  const provider = new ethers.JsonRpcProvider(requireEnv('RPC'));
+  const baseGetFeeData = provider.getFeeData.bind(provider);
+  provider.getFeeData = async () => {
+    const fd = await baseGetFeeData();
+    return new ethers.FeeData(fd.gasPrice, null, null); // gasPrice only -> legacy tx
+  };
+  return provider;
 }
 
 /** Wallet signer for the agent, connected to the provider. */

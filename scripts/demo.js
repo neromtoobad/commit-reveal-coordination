@@ -13,7 +13,16 @@ import {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const lines = [];
-function log(s = '') { console.log(s); lines.push(s); }
+const C = { reset: '\x1b[0m', bold: '\x1b[1m', dim: '\x1b[2m', cyan: '\x1b[36m' };
+// Push markdown to the transcript file; print a clean colorized version to the terminal.
+function toConsole(md) {
+  let s = md.replace(/\[`([^`]+)`\]\(([^)]+)\)/g, (_, t, u) => `${t}  ${C.dim}${u}${C.reset}`);
+  s = s.replace(/`([^`]+)`/g, '$1').replace(/\*\*([^*]+)\*\*/g, `${C.bold}$1${C.reset}`);
+  if (s.startsWith('# ')) return `\n${C.bold}${C.cyan}${s.slice(2)}${C.reset}\n`;
+  if (s.startsWith('## ')) return `\n${C.bold}${C.cyan}━━  ${s.slice(3)}  ━━${C.reset}`;
+  return s;
+}
+function log(md = '') { lines.push(md); console.log(toConsole(md)); }
 
 async function waitForTimestamp(provider, ts, label) {
   log(`  ...waiting for ${label} (chain ts > ${ts})`);
